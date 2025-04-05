@@ -20,15 +20,18 @@ This Chrome extension adds a dynamic Table of Contents (TOC) panel to ChatGPT co
 
 ## 📷 Preview
 
-> *(Include a screenshot here if you’d like)*
+![Installation](icons/Preview.png)
+
 
 ## 🛠️ Installation
 
-1. Clone or download this repository.
+1. Clone or download this repository and unzip the folder.
 2. Open Chrome and navigate to `chrome://extensions/`.
 3. Enable **Developer mode** (toggle switch in the top right).
 4. Click **Load unpacked** and select the extension folder.
 5. Visit [ChatGPT](https://chat.openai.com/) and start a conversation. The TOC will appear automatically.
+
+  ![Installation](https://user-images.githubusercontent.com/67743899/149144506-714a84a0-cd10-4155-91fe-20c39753b578.jpg)
 
 
 ## 🧠 How It Works
