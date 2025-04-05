@@ -5,8 +5,8 @@
     "description": "Adds a TOC panel to ChatGPT conversations.",
     "icons": {
       "16": "icons/Icon.png",
-      "48": "icons/TextIcon.png",
-        "128": "icons/TextIcon.png"
+      "48": "icons/Icon.png",
+        "128": "icons/Icon.png"
     },
     "content_scripts": [
       {

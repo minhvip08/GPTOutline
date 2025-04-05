@@ -131,6 +131,7 @@
 
     initObserver();
     setInterval(initObserver, 2000);
+    tocPanel.classList.toggle("collapsed");
     tocHandle.addEventListener("click", function () {
         tocPanel.classList.toggle("collapsed");
     });
