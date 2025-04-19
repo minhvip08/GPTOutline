@@ -13,7 +13,7 @@
     var tocPanel = document.createElement("div");
     tocPanel.id = "toc-panel";
     tocPanel.innerHTML =
-        '<div id="toc-header">Conversation TOC</div><ul id="toc-list"></ul>';
+        '<div id="toc-header">ChatGPT Table of Contents</div><ul id="toc-list"></ul>';
     document.body.appendChild(tocPanel);
 
     var tocHandle = document.createElement("div");
@@ -36,77 +36,71 @@
     }
 
     function updateTOC() {
-        var tocList = document.getElementById("toc-list");
+        const tocList = document.getElementById("toc-list");
         if (!tocList) return;
+    
         tocList.innerHTML = "";
-        var turns = (container || document).querySelectorAll(
+        const turns = (container || document).querySelectorAll(
             "article[data-testid^='conversation-turn-']"
         );
-        if (!turns || turns.length === 0) {
+    
+        if (!turns.length) {
             tocList.innerHTML =
                 '<li style="opacity:0.7;font-style:italic;">Empty chat</li>';
             return;
         }
-        for (var i = 0; i < turns.length; i++) {
-            var turn = turns[i];
-            var li = document.createElement("li");
-            var header = turn.querySelector("h6.sr-only");
-            var isAI = false;
-            if (header && header.textContent.indexOf("ChatGPT said:") >= 0) {
-                isAI = true;
-                li.textContent = "Turn " + (i + 1) + " (AI)";
-            } else {
-                li.textContent = "Turn " + (i + 1) + " (You)";
+    
+        turns.forEach((turn, idx) => {
+            const li = document.createElement("li");
+    
+            const isAI =
+                turn.querySelector("h6.sr-only")?.textContent.includes("ChatGPT said:");
+
+                const previewNode = turn.querySelector(
+                "p:not(.sr-only):not(:has(code)), \
+                 div:not(.sr-only):not(:has(code)),  \
+                 span:not(.sr-only):not(:has(code))"
+            );
+    
+            let contentPreview = previewNode?.textContent.trim() || "";
+            if (!contentPreview) contentPreview = isAI ? "AI's Turn" : "Your Turn";
+    
+            const maxLength = 100;
+            if (contentPreview.length > maxLength) {
+                contentPreview = contentPreview.slice(0, maxLength - 3) + "...";
             }
-            (function (element) {
-                li.addEventListener("click", function () {
-                    element.scrollIntoView({
-                        behavior: "smooth",
-                        block: "start",
-                    });
-                });
-            })(turn);
+    
+            li.textContent = `Turn ${idx + 1} ${isAI ? "(AI)" : "(You)"}: ${contentPreview}`;
+    
+            li.addEventListener("click", () =>
+                turn.scrollIntoView({ behavior: "smooth", block: "start" })
+            );
+    
             if (isAI) {
-                var sublist = document.createElement("ul");
-                var sections = turn.querySelectorAll("h3:not(.sr-only)");
-                for (var j = 0; j < sections.length; j++) {
-                    var section = sections[j];
-                    var skip = false;
-                    var node = section;
-                    while (node) {
-                        if (node.tagName === "PRE" || node.tagName === "CODE") {
-                            skip = true;
-                            break;
-                        }
-                        node = node.parentElement;
-                    }
-                    if (skip) continue;
-                    var subLi = document.createElement("li");
-                    var title =
-                        (section.textContent || "").trim() ||
-                        "Section " + (j + 1);
+                const sublist = document.createElement("ul");
+                turn.querySelectorAll("h3:not(.sr-only)").forEach((sec, j) => {
+                    // Bỏ qua các tiêu đề nằm trong code block
+                    if (sec.closest("pre, code")) return;
+    
+                    const subLi = document.createElement("li");
+                    const title = (sec.textContent || "").trim() || `Section ${j + 1}`;
                     subLi.textContent = title;
-                    (function (sec) {
-                        subLi.addEventListener("click", function (event) {
-                            event.stopPropagation();
-                            sec.classList.remove("toc-highlight");
-                            sec.offsetWidth;
-                            sec.classList.add("toc-highlight");
-                            sec.scrollIntoView({
-                                behavior: "smooth",
-                                block: "start",
-                            });
-                        });
-                    })(section);
+                    subLi.addEventListener("click", (e) => {
+                        e.stopPropagation();
+                        sec.classList.remove("toc-highlight");
+                        void sec.offsetWidth; 
+                        sec.classList.add("toc-highlight");
+                        sec.scrollIntoView({ behavior: "smooth", block: "start" });
+                    });
                     sublist.appendChild(subLi);
-                }
-                if (sublist.children.length > 0) {
-                    li.appendChild(sublist);
-                }
+                });
+                if (sublist.children.length) li.appendChild(sublist);
             }
+    
             tocList.appendChild(li);
-        }
+        });
     }
+    
 
     function initObserver() {
         var mainContainer =
